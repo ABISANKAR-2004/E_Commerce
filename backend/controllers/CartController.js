@@ -2,7 +2,8 @@ import { cartModel } from "../models/CartModel.js";
 import TryCatch from "../utilities/TryCatch.js";
 
 export const addCartProduct = TryCatch(async (req, res) => {
-  const { quantity, productId, userId } = req.body;
+  const { quantity, productId } = req.body;
+  const userId = req.user.userId;
 
   const cart = await cartModel.create({
     quantity,
@@ -25,7 +26,7 @@ export const removeCartProduct = TryCatch(async (req, res) => {
 });
 
 export const findCartProducts = TryCatch(async (req, res) => {
-  const userId = req.header("userId");
+  const userId = req.user.userId;
 
   const cart = await cartModel.find({ user: userId });
 
@@ -36,7 +37,8 @@ export const findCartProducts = TryCatch(async (req, res) => {
 });
 
 export const updateCartProduct = TryCatch(async (req,res) => {
-  const { productId, userId, quantity } = req.body;
+  const { productId,  quantity } = req.body;
+  const userId = req.user.userId;
   
   const cart = await cartModel.findOneAndUpdate(
     { product: productId, user: userId },

@@ -1,12 +1,12 @@
 import express from 'express';
 import { addCartProduct , removeCartProduct , findCartProducts , updateCartProduct} from '../controllers/CartController.js';
-
+import { isUser } from '../middlewares/isAuth.js';
 
 const router = express.Router();
 
-router.post("/add",addCartProduct);
-router.get("/find",findCartProducts);
-router.put("/update",updateCartProduct);
-router.delete("/remove",removeCartProduct);
+router.post("/add",isUser,addCartProduct);
+router.get("/find",isUser,findCartProducts);
+router.put("/update",isUser,updateCartProduct);
+router.delete("/remove",isUser,removeCartProduct);
 
 export default router;

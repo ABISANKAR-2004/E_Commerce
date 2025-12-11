@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken"
 import { userModel } from "../models/UserModel.js";
 import TryCatch from "../utilities/TryCatch.js";
 import { pwdHash, comparePwd } from "../utilities/hashing.js";
@@ -26,7 +27,7 @@ export const createUser = TryCatch(async (req, res) => {
 
 // DELETE USER
 export const deleteUser = TryCatch(async (req, res) => {
-  const { userId } = req.body;
+  const  userId  = req.user.userId;
 
   await userModel.deleteOne({ _id: userId });
 
@@ -131,8 +132,11 @@ export const loginUser = TryCatch(async (req, res) => {
       message: "Invalid password credentials",
     });
   }
+  const token = jwt.sign({userId:user._id,role:user.role},process.env.JWT_SECRET,
+    {expiresIn:"7d"}
+  )
 
-  return res.status(200).json({
+  return res.status(200).json({token,
     message: "Logged In Successfully",
   });
 });
