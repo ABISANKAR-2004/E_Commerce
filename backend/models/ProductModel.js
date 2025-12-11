@@ -9,10 +9,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  stock: {
+/*   stock: {
     type: Number,
     required: true,
-  },
+  }, */
   price: {
     type: Number,
     required: true,
@@ -23,10 +23,10 @@ const productSchema = new mongoose.Schema({
       url: String,
     },
   ],
-  sold: {
+ /*  sold: {
     type: Number,
     default: 0,
-  },
+  }, */
   category: {
     type: String,
     required: true,

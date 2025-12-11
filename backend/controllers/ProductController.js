@@ -3,15 +3,15 @@ import TryCatch from "../utilities/TryCatch.js";
 import { productModel } from "../models/ProductModel.js";
 
 export const createProduct = TryCatch(async (req, res) => {
-  const { title, description, stock, price, images, sold, category } = req.body;
+  const { title, description, price, images, category } = req.body;
 
   const product = await productModel.create({
     title,
     description,
-    stock,
+    
     price,
     images,
-    sold,
+    
     category,
   });
   return res.status(201).json({
