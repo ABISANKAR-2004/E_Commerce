@@ -5,6 +5,19 @@ export const addCartProduct = TryCatch(async (req, res) => {
   const { quantity, productId } = req.body;
   const userId = req.user.userId;
 
+  const exist = await cartModel.findOne({ product: productId, user: userId });
+  if(exist){
+    const cart = await cartModel.findOneAndUpdate(
+    { product: productId, user: userId },
+    { $set: { quantity: quantity } }
+  );
+
+  return res.status(201).json({cart,
+    message: "product added successfully...",
+  });
+  }
+  
+
   const cart = await cartModel.create({
     quantity,
     product: productId,
