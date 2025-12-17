@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Phone } from 'lucide-react';
-
+import { useApp } from '../../context/AppContext.jsx';
 
 const AuthPages = () => {
+  const { login, signup } = useApp();
+
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    mobileNumber:'',
+    mobileNumber: '',
     password: '',
     confirmPassword: ''
   });
@@ -20,35 +22,52 @@ const AuthPages = () => {
     });
   };
 
+  // ✅ This function MUST be triggered via <form onSubmit>
   const handleSubmit = (e) => {
-    e.preventDefault();
-        if (isLogin) {
+    e.preventDefault(); // prevents page reload
+
+    if (isLogin) {
       if (!formData.email || !formData.password) {
         alert('Please fill in all required fields!');
         return;
       }
-      alert(`Login successful!\nEmail: ${formData.email}`);
+      login(formData.email, formData.password);
     } else {
-      if (!formData.name || !formData.email || !formData.mobileNumber || !formData.password || !formData.confirmPassword) {
+      if (
+        !formData.name ||
+        !formData.email ||
+        !formData.mobileNumber ||
+        !formData.password ||
+        !formData.confirmPassword
+      ) {
         alert('Please fill in all required fields!');
         return;
       }
+
       if (formData.password !== formData.confirmPassword) {
         alert('Passwords do not match!');
         return;
       }
-      // Validate mobile number format
+
       if (!/^[0-9]{10}$/.test(formData.mobileNumber)) {
         alert('Please enter a valid 10-digit mobile number!');
         return;
       }
-      alert(`Signup successful!\nName: ${formData.name}\nEmail: ${formData.email}\nMobile: ${formData.mobileNumber}`);
+
+      signup(
+        formData.name,
+        formData.email,
+        formData.mobileNumber,
+        formData.password
+      );
+      setIsLogin(true);
     }
-    // Reset form
+
+    // Reset form after submit
     setFormData({
       name: '',
       email: '',
-      mobileNumber:'',
+      mobileNumber: '',
       password: '',
       confirmPassword: ''
     });
@@ -59,7 +78,7 @@ const AuthPages = () => {
     setFormData({
       name: '',
       email: '',
-      mobileNumber:'',
+      mobileNumber: '',
       password: '',
       confirmPassword: ''
     });
@@ -69,6 +88,7 @@ const AuthPages = () => {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl shadow-lg mb-4">
@@ -84,6 +104,7 @@ const AuthPages = () => {
 
         {/* Auth Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
+
           {/* Toggle Tabs */}
           <div className="flex mb-8 bg-gray-100 rounded-lg p-1">
             <button
@@ -96,6 +117,7 @@ const AuthPages = () => {
             >
               Login
             </button>
+
             <button
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-2 px-4 rounded-lg font-semibold transition ${
@@ -108,9 +130,9 @@ const AuthPages = () => {
             </button>
           </div>
 
-          {/* Form */}
-          <div className="space-y-5">
-            {/* Name Field (Signup Only) */}
+          {/* ✅ FORM WRAPPER (IMPORTANT FIX) */}
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* Name Field */}
             {!isLogin && (
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700">Full Name</label>
@@ -122,14 +144,14 @@ const AuthPages = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="John Doe"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg"
                     required
                   />
                 </div>
               </div>
             )}
 
-            {/* Email Field */}
+            {/* Email */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">Email Address</label>
               <div className="relative">
@@ -139,34 +161,31 @@ const AuthPages = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg"
                   required
                 />
               </div>
             </div>
 
-            {/* Mobile Number Field */}
+            {/* Mobile */}
             {!isLogin && (
               <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Mobile Number</label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <input
-                  type="tel"
-                  name="mobileNumber"
-                  value={formData.mobileNumber}
-                  pattern="[0-9]{10}"
-                  onChange={handleChange}
-                  placeholder="9876543210"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                  required
-                />
+                <label className="text-sm font-semibold text-gray-700">Mobile Number</label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    type="tel"
+                    name="mobileNumber"
+                    value={formData.mobileNumber}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
               </div>
-            </div>
             )}
 
-            {/* Password Field */}
+            {/* Password */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">Password</label>
               <div className="relative">
@@ -176,73 +195,53 @@ const AuthPages = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition"
+                  className="absolute right-3 top-3"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
             </div>
 
-            {/* Confirm Password Field (Signup Only) */}
+            {/* Confirm Password */}
             {!isLogin && (
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700">Confirm Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                    required
-                  />
-                </div>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg"
+                  required
+                />
               </div>
             )}
 
-            {/* Remember Me & Forgot Password (Login Only) */}
-            {isLogin && (
-              <div className="flex items-center justify-between">
-                <a href="#forgot" className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
-                  Forgot Password?
-                </a>
-              </div>
-            )}
-
-            
-            {/* Submit Button */}
+            {/* ✅ SUBMIT BUTTON */}
             <button
-              onClick={handleSubmit}
-              className="w-full bg-linear-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transform transition flex items-center justify-center space-x-2"
+              type="submit" // IMPORTANT: form controls submission
+              className="w-full bg-linear-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center space-x-2"
             >
               <span>{isLogin ? 'Login' : 'Create Account'}</span>
               <ArrowRight className="w-5 h-5" />
             </button>
-          </div>
+          </form>
 
-          
           {/* Toggle Link */}
           <p className="text-center text-sm text-gray-600 mt-6">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
-            <button
-              onClick={toggleAuthMode}
-              className="text-blue-600 hover:text-blue-700 font-semibold"
-            >
+            <button onClick={toggleAuthMode} className="text-blue-600 font-semibold">
               {isLogin ? 'Sign up' : 'Login'}
             </button>
           </p>
         </div>
 
-        {/* Footer */}
         <p className="text-center text-white text-sm mt-6 opacity-80">
           © 2025 AIT. All rights reserved.
         </p>

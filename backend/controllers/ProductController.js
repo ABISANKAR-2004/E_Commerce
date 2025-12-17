@@ -41,7 +41,9 @@ export const findProduct = TryCatch(async (req, res) => {
 });
 
 export const getAllProducts = TryCatch(async (req, res) => {
+  
   const products = await productModel.find({});
+  /* console.log(products) */;
   return res.status(200).json({
     products: products,
     message: "ALL Products",
