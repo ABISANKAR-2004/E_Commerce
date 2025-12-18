@@ -67,16 +67,16 @@ export const sendOTP = TryCatch(async (req, res) => {
 // VERIFY OTP
 export const verifyOtp = TryCatch(async (req, res) => {
   const { email, otp } = req.body;
-
+  
   const storedOtp = await OtpModel.findOne({ email });
-
+  
   if (!storedOtp) {
     return res.status(404).json({
       message: "OTP not found",
     });
   }
 
-  if (storedOtp.otp === otp) {
+  if (storedOtp.otp === Number(otp)) {
     return res.status(200).json({
       message: "OTP matched successfully",
     });
@@ -112,6 +112,15 @@ export const updatePassword = TryCatch(async (req, res) => {
   });
 });
 
+export const getUser = TryCatch( async(req, res) => {
+    const {userId} = req.user;
+
+    const user = await userModel.findById({_id:userId});
+
+    return res.status(200).json({user,message:"user found"});
+})
+
+// ------------------------------------------------------------
 
 // LOGIN USER
 export const loginUser = TryCatch(async (req, res) => {

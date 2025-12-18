@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Phone } from 'lucide-react';
-import { useApp } from '../../context/AppContext.jsx';
+import { useApp } from '../context/AppContext.jsx';
 
 const AuthPages = () => {
   const { login, signup } = useApp();

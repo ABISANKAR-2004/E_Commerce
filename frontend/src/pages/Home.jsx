@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ShoppingCart, Search, User, Menu, X, ChevronDown, LogIn } from "lucide-react";
-import { useApp } from "../../context/AppContext.jsx";
+import { useApp } from "../context/AppContext.jsx";
 
 
 const Home = () => {
