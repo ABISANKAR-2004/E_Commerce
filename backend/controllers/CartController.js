@@ -31,8 +31,8 @@ export const addCartProduct = TryCatch(async (req, res) => {
 });
 
 export const removeCartProduct = TryCatch(async (req, res) => {
-  const { id } = req.body;
-
+  //const { id } = req.body;
+  const {id} = req.params;
   const cart = await cartModel.findByIdAndDelete({ _id: id });
 
   return res.status(200).json({ message: "Product removed Successfully" });
@@ -41,7 +41,7 @@ export const removeCartProduct = TryCatch(async (req, res) => {
 export const findCartProducts = TryCatch(async (req, res) => {
   const userId = req.user.userId;
 
-  const cart = await cartModel.find({ user: userId });
+  const cart = await cartModel.find({ user: userId }).populate("product");
 
   return res.status(200).json({
     cart,

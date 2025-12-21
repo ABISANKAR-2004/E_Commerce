@@ -1,292 +1,76 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ShoppingCart, Search, User, Menu, X, ChevronDown, LogIn } from "lucide-react";
-import { useApp } from "../context/AppContext.jsx";
-
+import React, { useState, useRef } from "react";
+import {
+  ShoppingCart,
+  Search,
+  X,
+  ChevronDown,
+  LogIn,
+} from "lucide-react";
+import { useCookies } from "react-cookie";
+import { useApp } from "../context/AppContext";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import {Link} from "react-router-dom";
 
 const Home = () => {
-  const [cartCount, setCartCount] = useState(0);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  /* =========================================================
+     CONTEXT & STATE
+  ========================================================= */
+  const {
+    isLoggedIn,
+    logout,
+    navigate,
+    cartCount,
+    cartItems,
+    products,
+    categories,
+    addToCart,
+    removeFromCart,
+    getTotalPrice,decreaseQty
+  } = useApp();
+
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [cartItems, setCartItems] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [qty,setQty] = useState(0);
 
-  const {isLoggedIn,logout} = useApp();
-
-  const isLogIn = isLoggedIn;  
+  const [cookies] = useCookies(["token"]);
   const profileRef = useRef(null);
 
-  const categories = [
-    "All",
-    "Electronics",
-    "Clothing",
-    "Home & Garden",
-    "Sports",
-    "Books",
-  ];
 
-  const products = [
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      price: 99.99,
-      category: "Electronics",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
-    },
-    {
-      id: 2,
-      name: "Smart Watch",
-      price: 249.99,
-      category: "Electronics",
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
-    },
-    {
-      id: 3,
-      name: "Designer T-Shirt",
-      price: 29.99,
-      category: "Clothing",
-      image:
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=300&fit=crop",
-    },
-    {
-      id: 4,
-      name: "Running Shoes",
-      price: 89.99,
-      category: "Sports",
-      image:
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
-    },
-    {
-      id: 5,
-      name: "Coffee Maker",
-      price: 79.99,
-      category: "Home & Garden",
-      image:
-        "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=400&h=300&fit=crop",
-    },
-    {
-      id: 6,
-      name: "Bestseller Novel",
-      price: 19.99,
-      category: "Books",
-      image:
-        "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop",
-    },
-    {
-      id: 7,
-      name: "Laptop",
-      price: 999.99,
-      category: "Electronics",
-      image:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop",
-    },
-    {
-      id: 8,
-      name: "Yoga Mat",
-      price: 34.99,
-      category: "Sports",
-      image:
-        "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=400&h=300&fit=crop",
-    },
-  ];
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setShowProfileMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const filteredProducts = products.filter((product) => {
+  /* =========================================================
+     FILTERED PRODUCTS BASED ON SEARCH & CATEGORY
+  ========================================================= */
+  const filteredProducts = products.slice(products.length-8,products.length).filter((product) => {
     const matchesCategory =
       selectedCategory === "All" || product.category === selectedCategory;
-    const matchesSearch = product.name
+    const matchesSearch = product.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const addToCart = (product) => {
-    setCartItems([...cartItems, product]);
-    setCartCount(cartCount + 1);
+  /* =========================================================
+     HANDLERS
+  ========================================================= */
+
+  // Toggle cart sidebar
+  const handleCartClick = () => {
+    if (!isLoggedIn) {
+      alert("Please login to access your cart");
+      navigate("/signin");
+      return;
+    }
+    setShowCart(!showCart);
   };
 
-  const removeFromCart = (index) => {
-    const newCart = cartItems.filter((_, i) => i !== index);
-    setCartItems(newCart);
-    setCartCount(cartCount - 1);
-  };
-
-  const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0).toFixed(2);
-  };
-
-  const handleLogout = ()=>{
-    logout();
-    setShowProfileMenu(false);
-  }
-
+  /* =========================================================
+     RENDER COMPONENT
+  ========================================================= */
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">E</span>
-              </div>
-              <span className="text-2xl font-bold text-gray-800">ShopHub</span>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <a
-                href="#home"
-                className="text-gray-700 hover:text-blue-600 transition"
-              >
-                Home
-              </a>
-              <a
-                href="#products"
-                className="text-gray-700 hover:text-blue-600 transition"
-              >
-                Products
-              </a>
-              <a
-                href="#about"
-                className="text-gray-700 hover:text-blue-600 transition"
-              >
-                About
-              </a>
-              <a
-                href="#contact"
-                className="text-gray-700 hover:text-blue-600 transition"
-              >
-                Contact
-              </a>
-            </nav>
-
-            {/* Right Section */}
-            <div className="flex items-center space-x-4">
-              {/* Cart */}
-              <button
-                onClick={() => setShowCart(!showCart)}
-                className="relative p-2 hover:bg-gray-100 rounded-full transition"
-              >
-                <ShoppingCart className="w-6 h-6 text-gray-700" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Profile Dropdown */}
-              {isLogIn ? (
-                //  Logged-in UI
-                <div className="relative" ref={profileRef}>
-                  <button
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg transition"
-                  >
-                    <div className="w-8 h-8 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-white" />
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-gray-600" />
-                  </button>
-
-                  {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border">
-                      <a className="block px-4 py-2 hover:bg-gray-100">
-                        Profile
-                      </a>
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                //  Logged-out UI
-                <div className="relative" ref={profileRef}>
-                  <button
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg transition"
-                  >
-                    <div className="w-8 h-8 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <LogIn className="w-5 h-5 text-white" />
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-gray-600" />
-                  </button>
-
-                  {showProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border">
-                      <a className="block px-4 py-2 hover:bg-gray-100" href="/signin">
-                        Sign In
-                      </a>
-                      
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
-              >
-                {showMobileMenu ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {showMobileMenu && (
-            <nav className="md:hidden mt-4 pb-4 border-t pt-4">
-              <a
-                href="#home"
-                className="block py-2 text-gray-700 hover:text-blue-600"
-              >
-                Home
-              </a>
-              <a
-                href="#products"
-                className="block py-2 text-gray-700 hover:text-blue-600"
-              >
-                Products
-              </a>
-              <a
-                href="#about"
-                className="block py-2 text-gray-700 hover:text-blue-600"
-              >
-                About
-              </a>
-              <a
-                href="#contact"
-                className="block py-2 text-gray-700 hover:text-blue-600"
-              >
-                Contact
-              </a>
-            </nav>
-          )}
-        </div>
-      </header>
+      <Header cartCount={cartCount} onCartClick={handleCartClick} />
 
       {/* Cart Sidebar */}
       {showCart && (
@@ -311,30 +95,37 @@ const Home = () => {
               </p>
             ) : (
               <>
+                {/* Cart Items */}
                 <div className="space-y-4">
-                  {cartItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center space-x-4 border-b pb-4"
-                    >
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-blue-600 font-bold">${item.price}</p>
-                      </div>
-                      <button
-                        onClick={() => removeFromCart(index)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-                  ))}
+                {cartItems.map((item) => (
+                <div key={item.id} className="flex items-center space-x-4 border-b pb-4">
+                <img onClick={()=>{navigate(`/product/${item.product._id}`)}}
+                  src={item.product.image}
+                  alt={item.product.title}
+                  className="w-20 h-20 object-cover rounded"
+                />
+
+                <div className="flex-1">
+                  <h3 className="font-semibold">{item.product.title}</h3>
+                  <p className="text-blue-600 font-bold">
+                    ${item.product.price} × {item.quantity}
+                  </p>
+
+                  {/* Quantity Controls */}
+                  
                 </div>
+
+                {/* Remove Button */}
+                <button
+                  onClick={() => removeFromCart(item._id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            ))}
+          </div>
+                {/* Cart Total & Checkout */}
                 <div className="mt-6 pt-6 border-t">
                   <div className="flex justify-between text-xl font-bold mb-4">
                     <span>Total:</span>
@@ -357,13 +148,16 @@ const Home = () => {
           <p className="text-xl mb-8">
             Discover amazing products at unbeatable prices
           </p>
-          <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+          <button
+            onClick={() => navigate("/products")}
+            className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+          >
             Shop Now
           </button>
         </div>
       </section>
 
-      {/* Search and Filter Section */}
+      {/* Search & Filter Section */}
       <section className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           {/* Search Bar */}
@@ -393,36 +187,34 @@ const Home = () => {
         </div>
 
         {/* Products Grid */}
-        <div
-          id="products"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition"
             >
               <img
                 src={product.image}
-                alt={product.name}
+                alt={product.title}
                 className="w-full h-48 object-cover"
               />
               <div className="p-4">
                 <span className="text-xs text-gray-500 uppercase">
                   {product.category}
                 </span>
+                
                 <h3 className="text-lg font-semibold mt-1 mb-2">
-                  {product.name}
+                  <Link to={`/product/${product._id}`}>{product.title}</Link>
                 </h3>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-blue-600">
                     ${product.price}
                   </span>
                   <button
-                    onClick={() => addToCart(product)}
+                    onClick={() => navigate(`/product/${product._id}`)}
                     className="bg-linear-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
                   >
-                    Add to Cart
+                    View Product
                   </button>
                 </div>
               </div>
@@ -483,11 +275,7 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 ShopHub. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

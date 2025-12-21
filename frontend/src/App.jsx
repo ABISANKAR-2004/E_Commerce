@@ -5,6 +5,9 @@ import OTPVerify from "./pages/Otpverify.jsx";
 import UpdatePassword from "./pages/UpdatePassword.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
 import ForgotPassword from "./pages/ForgetPassword.jsx";
+import Products from "./pages/Products.jsx";
+import ProductDetail from "./pages/ProductDetail.jsx";
+
 
 function App() {
   return (
@@ -16,6 +19,8 @@ function App() {
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/updatepassword" element={<UpdatePassword />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
       </Routes>
     </>
   );
