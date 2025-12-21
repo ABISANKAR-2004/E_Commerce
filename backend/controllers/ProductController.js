@@ -41,14 +41,26 @@ export const findProduct = TryCatch(async (req, res) => {
 });
 
 export const getAllProducts = TryCatch(async (req, res) => {
-  
-  const products = await productModel.find({});
-  /* console.log(products) */;
-  return res.status(200).json({
-    products: products,
-    message: "ALL Products",
+  const page = Number(req.query.page) || 1;
+  const limit = 8;
+
+  const skip = (page - 1) * limit;
+
+  const totalProducts = await productModel.countDocuments();
+
+  const products = await productModel
+    .find({})
+    .skip(skip)
+    .limit(limit);
+
+  res.status(200).json({
+    products,
+    totalProducts,
+    totalPages: Math.ceil(totalProducts / limit),
+    currentPage: page,
   });
 });
+
 
 export const updateProduct = TryCatch(async (req, res) => {
   const { id, data } = req.body;

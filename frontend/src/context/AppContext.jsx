@@ -28,6 +28,8 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [cartItems, setCartItems] = useState([]);
   const [products, setProducts] = useState([]);
+  //const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   /* ---------------- ROUTER ---------------- */
   const navigate = useNavigate();
@@ -143,10 +145,12 @@ export const AppProvider = ({ children }) => {
   ========================================================= */
 
   // ---------- GET ALL PRODUCTS ----------
-  const getAllProducts = useCallback(async () => {
+  const getAllProducts = useCallback(async (page=1) => {
     try {
-      const res = await api.get("/product/products");
+      const res = await api.get(`/product/products?page=${page}`);
       setProducts(res.data.products);
+      setTotalPages(res.data.totalPages);
+      //setCurrentPage(res.data.currentPage);
     } catch (error) {
       console.log(error);
     }
@@ -269,8 +273,12 @@ const addToCart = async ({ product, qty }) => {
         cartCount,
         getTotalPrice,
         cartItems,
-        products,
+        
         categories,
+        products,
+        totalPages,
+       
+        getAllProducts
       }}
     >
       {children}
