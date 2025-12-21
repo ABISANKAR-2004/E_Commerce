@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   ShoppingCart,
   Search,
@@ -6,36 +6,32 @@ import {
   ChevronDown,
   LogIn,
 } from "lucide-react";
-import { useCookies } from "react-cookie";
+//import { useCookies } from "react-cookie";
 import { useApp } from "../context/AppContext";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import {Link} from "react-router-dom";
+import CartDrawer from "../components/CartDrawer";
 
 const Home = () => {
   /* =========================================================
      CONTEXT & STATE
   ========================================================= */
   const {
-    isLoggedIn,
-    logout,
+    isLoggedIn,  
     navigate,
     cartCount,
-    cartItems,
     products,
-    categories,
-    addToCart,
-    removeFromCart,
-    getTotalPrice,decreaseQty
+    categories,    
   } = useApp();
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCart, setShowCart] = useState(false);
-  const [qty,setQty] = useState(0);
+ 
 
-  const [cookies] = useCookies(["token"]);
-  const profileRef = useRef(null);
+  //const [cookies] = useCookies(["token"]);
+ // const profileRef = useRef(null);
 
 
   /* =========================================================
@@ -73,7 +69,12 @@ const Home = () => {
       <Header cartCount={cartCount} onCartClick={handleCartClick} />
 
       {/* Cart Sidebar */}
-      {showCart && (
+
+      <CartDrawer 
+      isOpen={showCart}
+      onClose={()=>setShowCart(false)}
+      />
+   {/*   {showCart && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50"
           onClick={() => setShowCart(false)}
@@ -94,39 +95,39 @@ const Home = () => {
                 Your cart is empty
               </p>
             ) : (
-              <>
+              <>*/}
                 {/* Cart Items */}
-                <div className="space-y-4">
+            {/*    <div className="space-y-4">
                 {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center space-x-4 border-b pb-4">
-                <img onClick={()=>{navigate(`/product/${item.product._id}`)}}
-                  src={item.product.image}
-                  alt={item.product.title}
+                <div key={item?.id} className="flex items-center space-x-4 border-b pb-4">
+                <img onClick={()=>{navigate(`/product/${item.product?._id}`)}}
+                  src={item.product?.image}
+                  alt={item.product?.title}
                   className="w-20 h-20 object-cover rounded"
                 />
 
                 <div className="flex-1">
-                  <h3 className="font-semibold">{item.product.title}</h3>
+                  <h3 className="font-semibold">{item.product?.title}</h3>
                   <p className="text-blue-600 font-bold">
-                    ${item.product.price} × {item.quantity}
+                    ${item.product?.price} × {item?.quantity}
                   </p>
-
-                  {/* Quantity Controls */}
+                >
+  */}           {/* Quantity Controls */}
                   
-                </div>
+             {/*    </div> */}
 
                 {/* Remove Button */}
-                <button
-                  onClick={() => removeFromCart(item._id)}
+                {/* <button
+                  onClick={() => removeFromCart(item?._id)}
                   className="text-red-500 hover:text-red-700"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             ))}
-          </div>
+          </div> */}
                 {/* Cart Total & Checkout */}
-                <div className="mt-6 pt-6 border-t">
+                {/* <div className="mt-6 pt-6 border-t">
                   <div className="flex justify-between text-xl font-bold mb-4">
                     <span>Total:</span>
                     <span>${getTotalPrice()}</span>
@@ -139,7 +140,7 @@ const Home = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Hero Section */}
       <section className="bg-linear-to-r from-blue-500 to-purple-600 text-white py-20">
@@ -208,7 +209,7 @@ const Home = () => {
                 </h3>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-blue-600">
-                    ${product.price}
+                    ₹{product.price}
                   </span>
                   <button
                     onClick={() => navigate(`/product/${product._id}`)}

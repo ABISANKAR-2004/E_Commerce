@@ -3,15 +3,16 @@ import { ShoppingCart, Search, User, Menu, X, ChevronDown, LogIn } from "lucide-
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useApp } from "../context/AppContext";
+import CartDrawer from "../components/CartDrawer";
 
 const Products = () => {
   const {
     isLoggedIn,
-    cartItems,
+    
     addToCart,
-    removeFromCart,
+    
     cartCount,
-    getTotalPrice,
+   
     navigate,
     products,
     categories,
@@ -57,7 +58,7 @@ const Products = () => {
       <Header cartCount={cartCount} onCartClick={handleCartClick} />
 
       {/* Cart Sidebar (same as Home) */}
-      {showCart && (
+      {/* {showCart && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50"
           onClick={() => setShowCart(false)}
@@ -103,7 +104,11 @@ const Products = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
+      <CartDrawer 
+      isOpen={showCart}
+      onClose={()=>setShowCart(false)}
+      />
 
       {/* Search and Filter Section */}
       <section className="container mx-auto px-4 py-8">
@@ -160,13 +165,13 @@ const Products = () => {
                 </h3>
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-blue-600">
-                    ${product.price}
+                    ₹{product.price}
                   </span>
                   <button
-                    onClick={() => addToCart(product)}
+                    onClick={() => navigate(`/product/${product._id}`)}
                     className="bg-linear-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
                   >
-                    Add to Cart
+                    View Product
                   </button>
                 </div>
               </div>

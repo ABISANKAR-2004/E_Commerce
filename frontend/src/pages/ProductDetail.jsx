@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useApp } from "../context/AppContext";
 import { useParams } from "react-router-dom";
+import CartDrawer from "../components/CartDrawer";
 
 const ProductDetail = () => {
   const {
@@ -13,8 +14,7 @@ const ProductDetail = () => {
     products,
     cartCount,
     navigate,
-    removeFromCart,
-    getTotalPrice,
+    
   } = useApp();
 
   const [showCart, setShowCart] = useState(false);
@@ -56,7 +56,7 @@ useEffect(() => {
       <Header cartCount={cartCount} onCartClick={handleCartClick} />
 
       {/* ================= CART SIDEBAR ================= */}
-      {showCart && (
+{/*       {showCart && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50"
           onClick={() => setShowCart(false)}
@@ -118,7 +118,11 @@ useEffect(() => {
             )}
           </div>
         </div>
-      )}
+      )} */}
+      <CartDrawer
+      isOpen={showCart}
+      onClose={() => setShowCart(false)}
+    />
 
       {/* ================= PRODUCT DETAIL ================= */}
       <section className="container mx-auto px-4 py-12">
@@ -138,7 +142,7 @@ useEffect(() => {
             <p className="text-gray-600 mt-4">{product.description}</p>
 
             <p className="text-3xl text-blue-600 font-bold mt-6">
-              ${product.price}
+              ₹{product.price}
             </p>
 
             <div className="flex items-center gap-4 mt-6">
